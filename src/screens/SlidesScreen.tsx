@@ -1,5 +1,6 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
+  Animated,
   Dimensions,
   Image,
   ImageSourcePropType,
@@ -12,6 +13,7 @@ import {
 import {HeaderTitle} from '../components/HeaderTitle';
 import Carousel, {Pagination} from 'react-native-snap-carousel';
 import Icon from 'react-native-vector-icons/Ionicons';
+import {useAnimation} from '../hooks/useAnimation';
 
 const {height: screenHeight, width: screenWidth} = Dimensions.get('window');
 
@@ -41,6 +43,15 @@ const items: Slide[] = [
 
 export const SlidesScreen = () => {
   const [activeIndex, setActiveIndex] = useState(0);
+  const {opacity, fadeIn, fadeOut} = useAnimation();
+
+  useEffect(() => {
+    if (activeIndex === 2) {
+      fadeIn();
+    } else {
+      fadeOut();
+    }
+  }, [activeIndex, opacity, fadeIn, fadeOut]);
 
   const renderItem = (item: Slide) => {
     return (
@@ -95,20 +106,24 @@ export const SlidesScreen = () => {
             backgroundColor: '#5856D6',
           }}
         />
-        <TouchableOpacity
-          style={{
-            flexDirection: 'row',
-            backgroundColor: '#5856D6',
-            width: 140,
-            height: 50,
-            borderRadius: 10,
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-          activeOpacity={0.8}>
-          <Text style={{fontSize: 25, color: 'white'}}>Entrar</Text>
-          <Icon name="chevron-forward-outline" color={'white'} size={30} />
-        </TouchableOpacity>
+
+        <Animated.View style={{opacity}}>
+          <TouchableOpacity
+            style={{
+              flexDirection: 'row',
+              backgroundColor: '#5856D6',
+              width: 140,
+              height: 50,
+              borderRadius: 10,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+            activeOpacity={0.8}
+            onPress={() => {}}>
+            <Text style={{fontSize: 25, color: 'white'}}>Entrar</Text>
+            <Icon name="chevron-forward-outline" color={'white'} size={30} />
+          </TouchableOpacity>
+        </Animated.View>
       </View>
     </SafeAreaView>
   );
