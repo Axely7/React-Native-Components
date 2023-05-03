@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   Animated,
   Dimensions,
@@ -14,6 +14,8 @@ import {HeaderTitle} from '../components/HeaderTitle';
 import Carousel, {Pagination} from 'react-native-snap-carousel';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {useAnimation} from '../hooks/useAnimation';
+import {useNavigation} from '@react-navigation/native';
+import {StackScreenProps} from '@react-navigation/stack';
 
 const {height: screenHeight, width: screenWidth} = Dimensions.get('window');
 
@@ -41,17 +43,12 @@ const items: Slide[] = [
   },
 ];
 
-export const SlidesScreen = () => {
+interface Props extends StackScreenProps<any, any> {}
+
+export const SlidesScreen = ({navigation}: Props) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const {opacity, fadeIn, fadeOut} = useAnimation();
-
-  useEffect(() => {
-    if (activeIndex === 2) {
-      fadeIn();
-    } else {
-      fadeOut();
-    }
-  }, [activeIndex, opacity, fadeIn, fadeOut]);
+  const isVisible = useRef(false);
 
   const renderItem = (item: Slide) => {
     return (
@@ -86,6 +83,10 @@ export const SlidesScreen = () => {
         layout="default"
         onSnapToItem={index => {
           setActiveIndex(index);
+          if (index === 2) {
+            isVisible.current = true;
+            fadeIn();
+          }
         }}
       />
 
@@ -119,7 +120,11 @@ export const SlidesScreen = () => {
               alignItems: 'center',
             }}
             activeOpacity={0.8}
-            onPress={() => {}}>
+            onPress={() => {
+              if (isVisible.current) {
+                navigation.navigate('HomeScreen');
+              }
+            }}>
             <Text style={{fontSize: 25, color: 'white'}}>Entrar</Text>
             <Icon name="chevron-forward-outline" color={'white'} size={30} />
           </TouchableOpacity>
